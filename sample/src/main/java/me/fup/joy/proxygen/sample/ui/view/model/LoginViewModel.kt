@@ -21,4 +21,13 @@ class LoginViewModel @Inject constructor(
             loggedInUser.value = userRepository.getLoggedInUser()
         }
     }
+
+    fun login(successCallback: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                loggedInUser.value = userRepository.login(userName = "SuperUser", password = "password")
+                successCallback()
+            } catch (ignore: Exception) { }
+        }
+    }
 }

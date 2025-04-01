@@ -8,8 +8,10 @@ import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
+import com.google.devtools.ksp.symbol.KSValueParameter
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -22,7 +24,6 @@ import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.ksp.toKModifier
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
-import kotlin.Unit
 
 private const val GENERATED_CLASS_SUFFIX = "ProxyGen"
 private const val NOT_IMPLEMENTED_CODE_BLOCK = "TODO(\"Not yet implemented\")"
@@ -48,22 +49,34 @@ class CodeGenerator(
         val className = "${classDeclaration.simpleName.getShortName()}$GENERATED_CLASS_SUFFIX"
         val fileSpec = FileSpec.builder(classDeclaration.packageName.getQualifier(), "$className.kt")
         val classSpec = TypeSpec.classBuilder(className)
+        var functionDeclarations = classDeclaration.getDeclaredFunctions().toList()
+        var constructorParameter = mutableListOf<KSValueParameter>()
 
         when {
             classDeclaration.classKind == ClassKind.INTERFACE -> {
                 classSpec.addSuperinterface(classDeclaration.asType(emptyList()).toTypeName())
             }
 
+            classDeclaration.classKind == ClassKind.CLASS &&
+                    (classDeclaration.hasModifier(KModifier.OPEN) || classDeclaration.hasModifier(KModifier.ABSTRACT)) -> {
+                functionDeclarations = functionDeclarations.filter { it.hasModifier(KModifier.OPEN) || it.hasModifier(KModifier.ABSTRACT) }
+                classSpec.superclass(classDeclaration.asType(emptyList()).toTypeName())
+
+                classDeclaration.primaryConstructor?.parameters?.forEach { param ->
+                    val name = param.name!!.getShortName()
+                    constructorParameter.add(param)
+                    classSpec.addSuperclassConstructorParameter(CodeBlock.builder().add(name).build())
+                }
+            }
+
             else -> {
-                // TODO support for open classes ?
-                logger.error("Proxy class must be a interface", classDeclaration)
+                logger.error("Unsupported class type. ProxyGen supports interfaces and open or abstract classes.", classDeclaration)
                 return
             }
         }
 
-        val functionDeclarations = classDeclaration.getDeclaredFunctions().toList()
         val properties = classDeclaration.getDeclaredProperties().toList()
-        buildConstructor(classSpec, functionDeclarations, properties)
+        buildConstructor(classSpec, constructorParameter, functionDeclarations, properties)
 
         functionDeclarations.forEach {
             createProxyFunction(it)?.let { proxyFunctionSpec -> classSpec.addFunction(proxyFunctionSpec) }
@@ -99,7 +112,7 @@ class CodeGenerator(
         }
 
         // build arguments code block
-        val arguments = parameters.map { parameter -> parameter.name }.joinToString(", ")
+        val arguments = parameters.joinToString(", ") { parameter -> parameter.name }
 
         // handle default implementation
         val fallbackBody = if (!declaration.isAbstract) "super.$name($arguments)" else NOT_IMPLEMENTED_CODE_BLOCK
@@ -111,8 +124,19 @@ class CodeGenerator(
     }
 }
 
-private fun buildConstructor(classSpec: TypeSpec.Builder, functionDeclarations: List<KSFunctionDeclaration>, propertyDeclarations: List<KSPropertyDeclaration>) {
+private fun buildConstructor(
+    classSpec: TypeSpec.Builder,
+    parameter: List<KSValueParameter>,
+    functionDeclarations: List<KSFunctionDeclaration>,
+    propertyDeclarations: List<KSPropertyDeclaration>
+) {
     val builder = FunSpec.constructorBuilder()
+
+    parameter.forEach { param ->
+        builder.addParameter(
+            ParameterSpec.builder(param.name!!.getShortName(), param.type.toTypeName()).build()
+        )
+    }
 
     propertyDeclarations.forEach { parameterDeclaration ->
         if (parameterDeclaration.isPrivate()) return@forEach
@@ -165,6 +189,6 @@ private fun getParameterSpecs(functionDeclaration: KSFunctionDeclaration): List<
     }
 }
 
-fun KSFunctionDeclaration.hasModifier(modifier: KModifier): Boolean {
+fun KSDeclaration.hasModifier(modifier: KModifier): Boolean {
     return modifiers.any { it.toKModifier() == modifier }
 }
