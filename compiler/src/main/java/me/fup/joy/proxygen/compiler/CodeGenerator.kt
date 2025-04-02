@@ -25,7 +25,7 @@ import com.squareup.kotlinpoet.ksp.toKModifier
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 
-private const val GENERATED_CLASS_SUFFIX = "ProxyGen"
+private const val GENERATED_CLASS_SUFFIX = "Proxy"
 private const val NOT_IMPLEMENTED_CODE_BLOCK = "TODO(\"Not yet implemented\")"
 private const val DELEGATE_SUFFIX = "Delegate"
 

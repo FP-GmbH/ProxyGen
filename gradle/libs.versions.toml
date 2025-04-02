@@ -12,6 +12,8 @@ jetbrainsKotlinJvm = "2.0.0"
 ksp = "2.1.0-1.0.29"
 hilt = "2.55"
 kotlinPoet = "2.0.0"
+group-id = "de.fup.proxygen"
+version = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

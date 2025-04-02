@@ -17,9 +17,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
-import me.fup.joy.proxygen.sample.UserRepositoryProxyGen
+import me.fup.joy.proxygen.sample.UserRepositoryProxy
 import me.fup.joy.proxygen.sample.data.User
-import me.fup.joy.proxygen.sample.ui.LoginScreenActionsProxyGen
+import me.fup.joy.proxygen.sample.ui.LoginScreenActionsProxy
 import me.fup.joy.proxygen.sample.ui.actions.LoginScreenActions
 import me.fup.joy.proxygen.sample.ui.view.model.LoginViewModel
 
@@ -62,13 +62,13 @@ fun LoginScreenPreview() {
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val userRepository = UserRepositoryProxyGen(
+    val userRepository = UserRepositoryProxy(
         isLoggedIn = false,
         getLoggedInUserDelegate = { null },
         loginDelegate = { userName, password -> User.createDummy(name = "loggedInUser") }
     )
 
-    val loginScreenActions = LoginScreenActionsProxyGen(
+    val loginScreenActions = LoginScreenActionsProxy(
         onLoginCompletedAction = { /* ignore */ },
         onLoginCompletedDelegate = { coroutineScope.launch { snackbarHostState.showSnackbar("onLoginCompleted") } }
     )

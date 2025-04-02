@@ -60,6 +60,6 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
-    implementation(project(":proxygen:core"))
-    ksp(project(":proxygen:compiler"))
+    implementation(project(":core"))
+    ksp(project(":compiler"))
 }

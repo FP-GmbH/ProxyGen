@@ -1,0 +1,30 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+plugins {
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.compose) apply false
+    alias(libs.plugins.jetbrains.kotlin.jvm) apply false
+    alias(libs.plugins.kotlin.ksp) apply false
+    alias(libs.plugins.hilt) apply false
+}
+
+subprojects {
+    apply plugin: 'maven-publish'
+    if (project.name != "sample") {
+        apply plugin: "org.jetbrains.kotlin.jvm"
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId libs.versions.group.id.get()
+                version libs.versions.version.get()
+                artifactId project.name
+
+                if (project.name != "sample") {
+                    from components.java
+                }
+            }
+        }
+    }
+}

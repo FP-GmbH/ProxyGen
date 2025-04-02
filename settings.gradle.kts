@@ -20,6 +20,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ProxyGen"
-include("sample")
-include(":proxygen:core")
-include(":proxygen:compiler")
+//include("sample")
+include(":core")
+include(":compiler")
