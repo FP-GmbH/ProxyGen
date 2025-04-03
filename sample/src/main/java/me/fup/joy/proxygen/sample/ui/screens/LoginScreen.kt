@@ -63,7 +63,7 @@ fun LoginScreenPreview() {
     val snackbarHostState = remember { SnackbarHostState() }
 
     val userRepository = UserRepositoryProxy(
-        isLoggedIn = false,
+        isLoggedInDelegate = false,
         getLoggedInUserDelegate = { null },
         loginDelegate = { userName, password -> User.createDummy(name = "loggedInUser") }
     )

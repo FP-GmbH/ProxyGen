@@ -142,16 +142,41 @@ private fun buildConstructor(
         if (parameterDeclaration.isPrivate()) return@forEach
 
         val name = parameterDeclaration.simpleName.getShortName()
+        val nameDelegate = "$name$DELEGATE_SUFFIX"
         val type = parameterDeclaration.type.toTypeName()
+        val typeDelegate = type.copy(nullable = true)
+
         builder.addParameter(
-            ParameterSpec.builder(name, type).build()
+            ParameterSpec.builder(nameDelegate, typeDelegate)
+                .defaultValue(NULL)
+                .build()
+        )
+
+        classSpec.addProperty(
+            PropertySpec.builder(nameDelegate, typeDelegate, KModifier.PRIVATE)
+                .mutable(true)
+                .initializer(nameDelegate)
+                .build()
         )
 
         classSpec.addProperty(
             PropertySpec.builder(name, type, KModifier.OVERRIDE)
                 .mutable(parameterDeclaration.isMutable)
-                .initializer(name)
-                .build()
+                .getter(
+                    FunSpec.getterBuilder()
+                        .addStatement("return $nameDelegate ?: $NOT_IMPLEMENTED_CODE_BLOCK")
+                        .build()
+                ).apply {
+                    if (parameterDeclaration.isMutable) {
+                        setter(
+                            FunSpec.setterBuilder()
+                                .addParameter(
+                                    ParameterSpec.builder("value", type).build()
+                                ).addCode("$nameDelegate = value")
+                                .build()
+                        )
+                    }
+                }.build()
         )
     }
 
