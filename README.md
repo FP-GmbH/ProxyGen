@@ -3,11 +3,9 @@ ProxyGen
 
 [![](https://jitci.com/gh/FP-GmbH/ProxyGen/svg)](https://jitci.com/gh/FP-GmbH/ProxyGen)
 
-ProxyGen is a tool to generate delegated proxy implementations of Kotlin and Java interfaces or classes.
+ProxyGen is a tool that uses Kotlin Symbol Processing to generate delegated proxy implementations of Kotlin and Java interfaces or classes which then can be used to replace dependency injection for composable previews.
 
-By running the `build` command of your module, a Kotlin Symbol Processor generates proxy implementations of annotated interfaces and classes. The generated classes will get the suffix `Proxy`.
-
-ProxyGen generates a delegation property for each property and each function of annotated classes. Those delegates can be passed to the constructor of the proxy class to inject some logic.
+The generated classes contain delegation properties for each property and each function of the annotated classes. Those delegates are defined as constructor parameters and can be used to inject logic.
 The delegate methods will be invoked if the original method is called. The delegated properties take the place of the original ones.
 
 Getting started
@@ -122,7 +120,7 @@ Known issues
 Sample
 ------
 
-If you wand to run the sample app from the source code, reactivate the sample module in the settings.gradle file. I hat to comment it out for deployment.
+If you wand to run the sample app from the source code, reactivate the sample module in the settings.gradle file. I had to comment it out for deployment.
 
 License
 =======
