@@ -1,7 +1,7 @@
 ProxyGen
 ========
 
-[![](https://jitci.com/gh/FP-GmbH/ProxyGen/svg)](https://jitci.com/gh/FP-GmbH/ProxyGen)
+[![](https://jitpack.io/v/FP-GmbH/ProxyGen.svg)](https://jitpack.io/#FP-GmbH/ProxyGen)
 
 ProxyGen is a tool that uses Kotlin Symbol Processing to generate delegated proxy implementations of Kotlin and Java interfaces or classes which then can be used to replace dependency injection for composable previews.
 
