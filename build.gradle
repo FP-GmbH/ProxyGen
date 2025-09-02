@@ -9,22 +9,23 @@ plugins {
 }
 
 subprojects {
-    apply plugin: 'maven-publish'
     if (project.name != "sample") {
+        apply plugin: 'maven-publish'
         apply plugin: "org.jetbrains.kotlin.jvm"
-    }
 
-    publishing {
-        publications {
-            maven(MavenPublication) {
-                groupId libs.versions.group.id.get()
-                version libs.versions.version.get()
-                artifactId project.name
+        publishing {
+            publications {
+                maven(MavenPublication) {
+                    groupId libs.versions.group.id.get()
+                    version libs.versions.version.get()
+                    artifactId project.name
 
-                if (project.name != "sample") {
-                    from components.java
+                    afterEvaluate {
+                        from components.kotlin
+                    }
                 }
             }
         }
+        apply plugin: 'maven-publish'
     }
 }
