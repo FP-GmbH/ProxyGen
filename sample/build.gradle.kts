@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "me.fup.joy.proxygen.sample"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "me.fup.joy.proxygen.sample"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 

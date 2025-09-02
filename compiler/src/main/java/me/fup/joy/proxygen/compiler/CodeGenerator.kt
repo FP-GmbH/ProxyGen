@@ -37,12 +37,11 @@ class CodeGenerator(
 ) {
     private val classDeclarations = mutableListOf<KSClassDeclaration>()
 
-    fun add(classDeclaration: KSClassDeclaration) {
-        if (classDeclarations.find { it.simpleName.asString() == classDeclaration.simpleName.asString() } == null) classDeclarations.add(classDeclaration)
-    }
-
-    fun write() {
-        classDeclarations.forEach { writeProxyClass(it) }
+    fun write(classDeclaration: KSClassDeclaration) {
+        if (classDeclarations.find { it.simpleName.asString() == classDeclaration.simpleName.asString() } == null) {
+            classDeclarations.add(classDeclaration)
+            writeProxyClass(classDeclaration)
+        }
     }
 
     private fun writeProxyClass(classDeclaration: KSClassDeclaration) {
